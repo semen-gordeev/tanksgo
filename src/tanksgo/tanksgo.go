@@ -47,15 +47,6 @@ var (
 	enter = []byte{27, 91, 49, 66}
 )
 
-// States of the round
-const (
-	COMPILING = 1 + iota
-	WAITING
-	STARTING
-	RUNNING
-	FINISHED
-)
-
 // Directions
 const (
 	LEFT = 0 + iota
@@ -70,13 +61,6 @@ const (
 	RIGHTUP
 	RIGHTDOWN
 	LEFTDOWN
-)
-
-// Damage points
-const (
-	DAMAGE_BACK  = 2
-	DAMAGE_FRONT = 4
-	DAMAGE_SIDE  = 6
 )
 
 // Colors
@@ -205,7 +189,7 @@ func main() {
 	tanks[DOWN], _ = getModel(modelsPath + "/" + "tankDown.txt")
 	splash, _ := getModel(modelsPath + "/" + "splash.txt")
 
-	var round = Round{}
+	var round = Round{FrameBuffer: make([]Symbol, mapWidth*mapHeight), Starting: true, countPlayers: countUsers}
 
 	for users < countUsers {
 		conn, err := l.Accept()
