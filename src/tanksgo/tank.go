@@ -42,3 +42,20 @@ func (tank *Tank) moveTo(direction int, crash bool) {
 	}
 }
 
+func (tank *Tank) nextTo(direction int) Tank {
+	t := *tank
+	for i, _ := range t.Borders.Points {
+		switch direction {
+		case RIGHT:
+			t.Borders.Points[i].X++
+		case LEFT:
+			t.Borders.Points[i].X--
+		case UP:
+			t.Borders.Points[i].Y--
+		case DOWN:
+			t.Borders.Points[i].Y++
+		}
+	}
+	return t
+}
+

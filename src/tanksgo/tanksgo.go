@@ -14,16 +14,11 @@ import (
 const framesPerSecond = 8
 const getReadyPause = 400
 const maxNameLength = 25
-const maxParallelRounds = 100
-const maxPlayersPerRound = 5
-const minPlayersPerRound = 1
-const maxRoundWaitingTimeSec = 5
-const maxRoundRunningTimeSec = 600
 const maxSpeed = 5
 
-const bonusPoint = 5
-const lowFactor = 50
-const highFactor = 5
+const bombDamage = 5
+const crashDamage = 1
+const ramDamage  = 3
 
 const mapWidth = 179
 const mapHeight = 38

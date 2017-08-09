@@ -101,38 +101,61 @@ func (player *Player) readDirection(round *Round) {
 				break
 			}
 		}
-
 		switch direction[0] {
 		case 68:
 			// Left
 			if player.Tank.Direction != LEFT {
 				player.Tank.Direction = LEFT
 			} else {
-				player.Tank.moveTo(LEFT, false)
+				player.Tank.moveTo(LEFT, player.willBeCrash(LEFT, round))
 			}
 		case 67:
 			// Right
 			if player.Tank.Direction != RIGHT {
 				player.Tank.Direction = RIGHT
 			} else {
-				player.Tank.moveTo(RIGHT, false)
+				player.Tank.moveTo(RIGHT, player.willBeCrash(RIGHT, round))
 			}
 		case 65:
 			// Up
 			if player.Tank.Direction != UP {
 				player.Tank.Direction = UP
 			} else {
-				player.Tank.moveTo(UP, false)
+				player.Tank.moveTo(UP, player.willBeCrash(UP, round))
 			}
 		case 66:
 			// Down
 			if player.Tank.Direction != DOWN {
 				player.Tank.Direction = DOWN
 			} else {
-				player.Tank.moveTo(DOWN, false)
+				player.Tank.moveTo(DOWN, player.willBeCrash(DOWN, round))
 			}
 		}
 	}
+}
+
+func (player *Player) willBeCrash(direction int, round *Round) bool {
+	result := false
+	tmpTank := player.Tank.nextTo(direction)
+	// hit wall
+	for _, point := range tmpTank.Borders.Points {
+		if point.X < 1 || point.X >= mapWidth-nameTableWidth || point.Y < 1 || point.Y >= mapHeight-1 {
+			player.Health -= crashDamage
+			result = true
+		}
+	}
+	// hit another tank
+	for _, opponent := range round.Players {
+		if player.Name == opponent.Name {
+			continue
+		}
+		if tmpTank.Borders.intersects(&opponent.Tank.Borders) {
+			player.Health -= crashDamage
+			opponent.Health -= ramDamage
+			result = true
+		}
+	}
+	return result
 }
 
 func (player *Player) writeToThePlayer(message []byte, clean bool, go_home bool) {
