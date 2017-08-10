@@ -50,12 +50,19 @@ const (
 	DOWN
 )
 
-// Car Borders
+// Tank Borders
 const (
 	LEFTUP = 0 + iota
 	RIGHTUP
 	RIGHTDOWN
 	LEFTDOWN
+)
+
+// State of Round
+const (
+	INIT = 0 + iota
+	STARTED
+	FINISHED
 )
 
 // Colors
@@ -157,7 +164,7 @@ func prepare(conn net.Conn, splash []byte, round *Round) {
 		return
 	}
 	p.initPlayer(len(round.Players))
-	round.Players = append(round.Players, p)
+	round.Players = append(round.Players, &p)
 	p.writeToThePlayer([]byte("Waiting for other players to join...\n"), true, true)
 	round.writeToAllPlayers([]byte(fmt.Sprintf("%s is added\n", p.Name)), false, false)
 }
@@ -184,7 +191,7 @@ func main() {
 	tanks[DOWN], _ = getModel(modelsPath + "/" + "tankDown.txt")
 	splash, _ := getModel(modelsPath + "/" + "splash.txt")
 
-	var round = Round{FrameBuffer: make([]Symbol, mapWidth*mapHeight), Starting: true, countPlayers: countUsers}
+	var round = Round{FrameBuffer: make([]Symbol, mapWidth*mapHeight), State: INIT, countPlayers: countUsers}
 
 	for users < countUsers {
 		conn, err := l.Accept()

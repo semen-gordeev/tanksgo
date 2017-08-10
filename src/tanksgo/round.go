@@ -7,10 +7,10 @@ import (
 )
 
 type Round struct {
-	Players         []Player
+	Players         []*Player
 	//Bombs           []Bomb
 	FrameBuffer     Symbols
-	Starting		bool
+	State			int
 	countPlayers 	int
 	sync.Mutex
 }
@@ -63,6 +63,9 @@ func (round *Round) applyNames(lineBetweenPlayersInBar int) {
 
 func (round *Round) applyUserData(activeFrameBuffer []Symbol, lineBetweenPlayersInBar int) {
 	for num, player := range round.Players {
+		if player.Health <= 0 {
+			player.Color = BOLD
+		}
 		// Apply health
 		health := []byte(fmt.Sprintf("Health: %3d", player.Health))
 		for i, char := range health {
@@ -116,11 +119,11 @@ func (round *Round) applyTanks(activeMap []Symbol) {
 }
 
 func (round *Round) applyGetReady(activeFrameBuffer []Symbol, getReadyCounter *int) {
-	if round.Starting {
+	if round.State == INIT {
 		getReady := "GET READY!"
 		if *getReadyCounter == 0 {
 			fmt.Println("Round has started!")
-			round.Starting = false
+			round.State = STARTED
 		} else if *getReadyCounter <= framesPerSecond*1 {
 			getReady += " 1"
 		} else if *getReadyCounter <= framesPerSecond*2 {
@@ -155,6 +158,7 @@ func (round *Round) checkGameOver(activeFrameBuffer Symbols) bool {
 		}
 		round.writeToAllPlayers(activeFrameBuffer.symbolsToByte(), false, true)
 		time.Sleep(5 * time.Second)
+		round.State = FINISHED
 		return true
 	} else {
 		return false

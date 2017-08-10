@@ -101,6 +101,9 @@ func (player *Player) readDirection(round *Round) {
 				break
 			}
 		}
+		if round.State != STARTED {
+			continue
+		}
 		switch direction[0] {
 		case 68:
 			// Left
@@ -151,7 +154,9 @@ func (player *Player) willBeCrash(direction int, round *Round) bool {
 		}
 		if tmpTank.Borders.intersects(&opponent.Tank.Borders) {
 			player.Health -= crashDamage
-			opponent.Health -= ramDamage
+			if opponent.Health > 0 {
+				opponent.Health -= ramDamage
+			}
 			result = true
 		}
 	}
