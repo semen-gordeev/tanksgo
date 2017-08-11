@@ -92,6 +92,11 @@ func (player *Player) readDirection(round *Round) {
 				// Space
 				if player.Bombs > 0 {
 					player.Bombs--
+					b := new(Bomb)
+					b.init(player.Tank)
+					round.Lock()
+					round.Bombs = append(round.Bombs, b)
+					round.Unlock()
 				}
 			} else if escpos == 0 && direction[0] == 27 {
 				escpos = 1

@@ -13,3 +13,11 @@ func (rectangle *Rectangle) intersects(r *Rectangle) bool {
 	}
 	return true
 }
+
+func (rectangle *Rectangle) pointInside(point Point) bool {
+	if rectangle.Points[LEFTUP].X <= point.X && rectangle.Points[LEFTUP].Y <= point.Y &&
+		rectangle.Points[RIGHTDOWN].X >= point.X && rectangle.Points[RIGHTDOWN].Y >= point.Y {
+		return true
+	}
+	return false
+}

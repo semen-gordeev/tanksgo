@@ -11,10 +11,9 @@ import (
 	"strings"
 )
 
-const framesPerSecond = 8
+const framesPerSecond = 20
 const getReadyPause = 400
 const maxNameLength = 25
-const maxSpeed = 5
 
 const bombDamage = 5
 const crashDamage = 1
@@ -29,8 +28,7 @@ const maxBombs = 100
 
 const colorPrefix = "\x1b["
 const colorPostfix = "m"
-const bonus = "\xE2\x99\xA5"
-const bomb = "\xE2\x9C\xB3"
+const bomb = "*"
 
 var (
 	tanks = [4][]byte{}
@@ -39,7 +37,7 @@ var (
 	clear = []byte{27, 91, 50, 74}
 	// [20A[90D
 	middle = []byte{27, 91, 50, 48, 65, 27, 91, 57, 48, 68}
-	enter = []byte{27, 91, 49, 66}
+
 )
 
 // Directions

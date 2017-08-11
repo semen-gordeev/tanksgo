@@ -17,7 +17,6 @@ func initTelnet(conn net.Conn) error {
 }
 
 func readTelnet(conn net.Conn) error {
-	// https://tools.ietf.org/html/rfc854
 	reply := make([]byte, 1)
 	bytesRead := 0
 	shortCommand := false

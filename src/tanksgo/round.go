@@ -8,7 +8,7 @@ import (
 
 type Round struct {
 	Players         []*Player
-	//Bombs           []Bomb
+	Bombs           []*Bomb
 	FrameBuffer     Symbols
 	State			int
 	countPlayers 	int
@@ -16,7 +16,6 @@ type Round struct {
 }
 
 func (round *Round) generateMap() {
-	// http://www.theasciicode.com.ar
 	for row := 0; row < mapHeight; row++ {
 		for column := 0; column < mapWidth; column++ {
 			var char []byte
@@ -45,10 +44,29 @@ func (round *Round) writeToAllPlayers(message []byte, clean bool, go_home bool) 
 func (round *Round) gameLogic() {
 	for i := range round.Players {
 		go round.Players[i].readDirection(round)
-	//	go round.Players[i].checkPosition(round)
-	//	go round.Players[i].checkSpeed(round)
-	//	go round.Players[i].checkHealth(round)
-	//	go round.Players[i].checkBomb(round)
+	}
+	go round.moveBombs()
+}
+
+func (round *Round) moveBombs() {
+	for {
+		for _, b := range round.Bombs {
+			if b.Active {
+				b.move()
+				if !b.Active {
+					continue
+				}
+				for _, p := range round.Players {
+					if p.Tank.Borders.pointInside(b.Point) {
+						if p.Health > 0 {
+							p.Health -= bombDamage
+						}
+						b.Active = false
+					}
+				}
+			}
+		}
+		time.Sleep(1 % framesPerSecond * 100 * time.Millisecond)
 	}
 }
 
@@ -107,13 +125,22 @@ func (round *Round) applyTanks(activeMap []Symbol) {
 				*/
 				chars = []byte{tanks[player.Tank.Direction][i], tanks[player.Tank.Direction][i+1]}
 				i++
-			} else if player.Health <= 0 && tanks[player.Tank.Direction][i] == 'o' {
-				chars = []byte{'x'}
 			} else {
 				chars = []byte{tanks[player.Tank.Direction][i]}
 			}
 			activeMap[(player.Tank.Borders.Points[LEFTUP].Y+charPosY)*mapWidth+player.Tank.Borders.Points[LEFTUP].X+charPosX] = Symbol{player.Color, chars}
 			charPosX++
+		}
+	}
+}
+
+func (round *Round) applyBombs(activeFrameBuffer []Symbol) {
+	if round.State != STARTED {
+		return
+	}
+	for _, b := range round.Bombs {
+		if b.Active {
+			activeFrameBuffer[b.Point.Y*mapWidth+b.Point.X] = Symbol{BOLD, []byte(bomb)}
 		}
 	}
 }
@@ -182,9 +209,10 @@ func (round *Round) start() {
 		activeFrameBuffer := make(Symbols, len(round.FrameBuffer))
 		copy(activeFrameBuffer, round.FrameBuffer)
 
+		round.applyGetReady(activeFrameBuffer, &getReadyCounter)
 		round.applyUserData(activeFrameBuffer, lineBetweenPlayersInBar)
 		round.applyTanks(activeFrameBuffer)
-		round.applyGetReady(activeFrameBuffer, &getReadyCounter)
+		round.applyBombs(activeFrameBuffer)
 
 		round.writeToAllPlayers(activeFrameBuffer.symbolsToByte(), false, true)
 
