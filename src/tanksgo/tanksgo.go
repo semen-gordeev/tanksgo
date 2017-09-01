@@ -6,13 +6,12 @@ import (
 	"flag"
 	"fmt"
 	"net"
-	_ "net/http/pprof"
 	"os"
 	"strings"
 )
 
 const framesPerSecond = 20
-const getReadyPause = 400
+const getReadyPause = 80
 const maxNameLength = 25
 
 const bombDamage = 5

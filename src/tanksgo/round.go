@@ -66,7 +66,7 @@ func (round *Round) moveBombs() {
 				}
 			}
 		}
-		time.Sleep(1 % framesPerSecond * 100 * time.Millisecond)
+		time.Sleep(1.0 / framesPerSecond * 1000 * time.Millisecond)
 	}
 }
 
@@ -193,13 +193,12 @@ func (round *Round) checkGameOver(activeFrameBuffer Symbols) bool {
 }
 
 func (round *Round) start() {
-	// waiting all players
 	for len(round.Players) != round.countPlayers {
 		time.Sleep(1*time.Second)
 	}
 
 	lineBetweenPlayersInBar := mapHeight / len(round.Players)
-	getReadyCounter := getReadyPause / framesPerSecond
+	getReadyCounter := getReadyPause
 
 	round.gameLogic()
 	round.generateMap()
@@ -220,6 +219,6 @@ func (round *Round) start() {
 			break
 		}
 
-		time.Sleep(1 % framesPerSecond * 100 * time.Millisecond)
+		time.Sleep(1.0/framesPerSecond * 1000 * time.Millisecond)
 	}
 }
